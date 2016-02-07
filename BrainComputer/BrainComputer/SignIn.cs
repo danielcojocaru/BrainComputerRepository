@@ -212,7 +212,7 @@ namespace BrainComputer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("There was a problem creating your account. Please try again later.\n{0}", ex.Message);
+                    MessageBox.Show(string.Format("There was a problem creating your account. Please try again later.\n {0}", ex.Message));
                 }
 
             }
