@@ -95,7 +95,7 @@ namespace BrainComputer
             {
                 lblInfos.Text = "Please use at least 6 characters.";
                 lblInfos.Visible = true;
-                this.Height = 180;
+                this.Height = 172;
             }
         }
 
@@ -142,11 +142,11 @@ namespace BrainComputer
 
         private void ExecuteSignIn()
         {
-            bool heEnteredTheUsernameAndThePassword =
+            bool heEnteredAUsernameAndAPassword =
                 tbxUsername.Text != "Username" && tbxUsername.Text != "" &&
                 tbxPassword.Text != "Password" && tbxPassword.Text != "";
 
-            if (!heEnteredTheUsernameAndThePassword)
+            if (!heEnteredAUsernameAndAPassword)
             {
                 MessageBox.Show("Please enter your Username and your Password.", "Sign in");
             }
@@ -170,7 +170,15 @@ namespace BrainComputer
                                 userFound = true;
                                 if (item.Password == tbxPassword.Text)
                                 {
-                                    OpenGame(item.Id);
+                                    try
+                                    {
+                                        OpenGame(item.Id);
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        ShowErrorMessage(ex);
+                                    }
+                                    
                                     break;
                                 }
                                 else
@@ -189,15 +197,19 @@ namespace BrainComputer
             }
         }
 
+        private void ShowErrorMessage(Exception ex)
+        {
+            MessageBox.Show("There was a problem opening the game. Please make sure that you have already created the database by running 'SQLScripts/InitDB.sql' in SSMS.\n{0}", ex.Message);
+        }
+
         private void CreateNewAccount()
         {
             using (BrainGameDBEntities3 context = new BrainGameDBEntities3())
             {
-                bool usernameIsUnique = true;
-                CheckIfTheUsernameIsUnique(context, out usernameIsUnique);
-
                 try
                 {
+                    bool usernameIsUnique = true;
+                    CheckIfTheUsernameIsUnique(context, out usernameIsUnique);
                     if (usernameIsUnique)
                     {
                         Users currentUser = new Users();
@@ -212,7 +224,7 @@ namespace BrainComputer
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(string.Format("There was a problem creating your account. Please try again later.\n {0}", ex.Message));
+                    ShowErrorMessage(ex);
                 }
 
             }
@@ -263,10 +275,10 @@ namespace BrainComputer
         private void btnDemoAccount_Click(object sender, EventArgs e)
         {
             MessageBox.Show("The account with the username = \"aaaaaa\" and with the password = \"aaaaaa\" will be oppened from the database.\nYou can also connect to this game manually, using this account.\nPlease make sure that you have already created the database by using the Sql query given in the file \"BrainGameDB.sql\".");
+            int id = 1;
 
             try
             {
-                int id = 1;
                 using (BrainGameDBEntities3 context = new BrainGameDBEntities3())
                 {
                     var selected = context.Users
@@ -282,7 +294,7 @@ namespace BrainComputer
             }
             catch (Exception ex)
             {
-                MessageBox.Show("There was a problem opening the game. Please make sure that you have already created the database by using the Sql querry from the file \"BrainGameDB.sql\".\n{0}", ex.Message);
+                ShowErrorMessage(ex);
             }
         }
         #endregion Private void Methods
